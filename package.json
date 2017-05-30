@@ -9,6 +9,7 @@
   "author": "Nathan Dawson",
   "license": "ISC",
   "devDependencies": {
-    "express": "^4.15.3"
+    "express": "^4.15.3",
+    "http-server": "^0.10.0"
   }
 }
