@@ -7,18 +7,23 @@ var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, {
 var stage = new PIXI.Container();
 stage.interactive = true;
 stage.buttonmode = true;
+
 var mouse_selection_box;
 var pointX, pointY;
 
 var world = new Array();
 
-
 stage.on('pointerdown', (event)=>{
     pointX = event.data.global.x    
     pointY = event.data.global.y
+    if(mouse_selection_box){
+        removeEntity(mouse_selection_box);
+        mouse_selection_box = undefined;
+    }
     mouse_selection_box = new SelectionBox(pointX, pointY);
     addEntity(mouse_selection_box);
 });
+
 stage.on('pointermove', (event)=>{
     mX = event.data.global.x    
     mY = event.data.global.y
@@ -27,13 +32,15 @@ stage.on('pointermove', (event)=>{
         pointY = mouse_selection_box.sprite.y;
         mouse_selection_box.setSize(mX - pointX, mY - pointY)
     }
-})
+});
+
 stage.on('pointerup', (event)=>{
     if(mouse_selection_box){
         removeEntity(mouse_selection_box);
         mouse_selection_box = undefined;
     }
 });
+
 function render(){
     requestAnimationFrame(render);
     world.forEach(e => e.update(10));

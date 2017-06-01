@@ -10,7 +10,7 @@ class Base extends Entity{
         var now = new Date().getTime();
         var difference = now - this.last_unit_creation_time;
         if(difference > this.unit_creation_cooldown){
-            let unit = new Unit(this.sprite.x + 50, this.sprite.y + 40);
+            let unit = new Unit(this.sprite.x + 50 + (Math.random() * 50), this.sprite.y + 40 + (Math.random() * 50));
             addEntity(unit);
             this.last_unit_creation_time = new Date().getTime();
         }
