@@ -13,7 +13,13 @@ var pointX, pointY;
 
 var world = new Array();
 
-stage.on('pointerdown', (event)=>{
+var FPS = 60;
+var START_TIME = Date.now();
+var frameDuration = 1000 / FPS;
+var lag = 0;
+
+
+stage.on('pointerdown', (event) => {
     pointX = event.data.global.x    
     pointY = event.data.global.y
     if(mouse_selection_box){
@@ -43,7 +49,17 @@ stage.on('pointerup', (event)=>{
 
 function render(){
     requestAnimationFrame(render);
-    world.forEach(e => e.update(10));
+    var CURRENT = Date.now();
+    var ELAPSED = CURRENT - START_TIME;
+    START_TIME = CURRENT;
+    
+    lag += ELAPSED;
+
+    while (lag >= frameDuration){  
+        lag -= frameDuration;
+    }
+    var lagOffset = lag / frameDuration;
+    world.forEach(e => e.update(lagOffset));
     renderer.render(stage);
 }
  
