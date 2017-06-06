@@ -1,7 +1,10 @@
 class Entity{
     sprite : Phaser.Sprite;
-    constructor(sprite : Phaser.Sprite, layer : Phaser.Group){
+    constructor(sprite : Phaser.Sprite){
         this.sprite = sprite;
-        layer.add(sprite);
+    }
+
+    update(deltaTime){
+
     }
 }

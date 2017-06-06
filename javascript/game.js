@@ -9,21 +9,38 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 var Entity = (function () {
-    function Entity(sprite, layer) {
+    function Entity(sprite) {
         this.sprite = sprite;
-        layer.add(sprite);
     }
+    Entity.prototype.update = function (deltaTime) {
+    };
     return Entity;
 }());
 var image_dictionary = [
     {
         name: "Unit",
         url: "resources/unit/unit_level_1.png"
+    },
+    {
+        name: "Base",
+        url: "resources/base/base.png"
+    },
+    {
+        name: "Grass_1",
+        url: "resources/tile/grass_tile_1.png"
+    },
+    {
+        name: "Grass_2",
+        url: "resources/tile/grass_tile_2.png"
     }
 ];
 var Game = (function () {
     function Game() {
-        this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, 'game_container', { preload: this.preload, create: this.create, update: this.update });
+        this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, 'game_container', {
+            preload: this.preload.bind(this),
+            create: this.create.bind(this),
+            update: this.update.bind(this)
+        });
     }
     Game.prototype.preload = function () {
         var _this = this;
@@ -39,20 +56,77 @@ var Game = (function () {
     Game.prototype.create = function () {
         console.log("create");
         this.entity_list = new Array();
-        var unit = new UnitDefault(0, 0, this.layer_1);
+        for (var x = 0; x < 30; x++) {
+            for (var y = 0; y < 30; y++) {
+                new Grass(x * 32, y * 32);
+            }
+        }
+        var unit = new UnitDefault(0, 0);
+        this.entity_list.push(unit);
+        var base = new Base(0, 0);
+        this.entity_list.push(base);
+    };
+    Game.prototype.createSprite = function (x, y, resource_name, layer) {
+        var sprite = game_object.game.add.sprite(x, y, resource_name);
+        var s_group;
+        switch (layer) {
+            case 1:
+                s_group = this.layer_1;
+                break;
+            case 2:
+                s_group = this.layer_2;
+                break;
+            case 3:
+                s_group = this.layer_3;
+                break;
+            case 4:
+                s_group = this.layer_4;
+                break;
+        }
+        s_group.add(sprite);
+        return sprite;
     };
     Game.prototype.update = function () {
+        var delta_time = this.game.time.elapsed / 1000;
+        this.entity_list.forEach(function (e) {
+            e.update(delta_time);
+        });
     };
     return Game;
 }());
 var game_object = new Game();
+var Base = (function (_super) {
+    __extends(Base, _super);
+    function Base(x, y) {
+        var _this = this;
+        var sprite = game_object.createSprite(x, y, 'Base', 2);
+        sprite.scale.set(0.75, 0.75);
+        _this = _super.call(this, sprite) || this;
+        _this.units = [];
+        _this.unit_max = 4;
+        _this.unit_spawn_speed = 1;
+        return _this;
+    }
+    return Base;
+}(Entity));
+var Grass = (function (_super) {
+    __extends(Grass, _super);
+    function Grass(x, y) {
+        var _this = this;
+        var sprite = game_object.createSprite(x, y, Math.random() > 0.5 ? "Grass_1" : "Grass_2", 1);
+        sprite.scale.set(0.5, 0.5);
+        _this = _super.call(this, sprite) || this;
+        return _this;
+    }
+    return Grass;
+}(Entity));
 var UnitDefault = (function (_super) {
     __extends(UnitDefault, _super);
-    function UnitDefault(x, y, layer) {
+    function UnitDefault(x, y) {
         var _this = this;
-        var sprite = game_object.game.add.sprite(x, y, 'Unit');
-        console.log(layer);
-        _this = _super.call(this, sprite, layer) || this;
+        var sprite = game_object.createSprite(x, y, 'Unit', 3);
+        sprite.scale.set(0.75, 0.75);
+        _this = _super.call(this, sprite) || this;
         return _this;
     }
     return UnitDefault;
