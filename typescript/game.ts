@@ -34,6 +34,8 @@ class Game{
 
     entity_list : Entity[];
 
+    selectionbox : Phaser.Graphics;
+
     preload(){
         console.log("preload");
         image_dictionary.forEach(image => {
@@ -43,6 +45,9 @@ class Game{
         this.layer_2 = this.game.add.group();
         this.layer_3 = this.game.add.group();
         this.layer_4 = this.game.add.group();
+
+        this.selectionbox = this.game.add.graphics(0,0, this.layer_4);
+
     }
 
     create(){
@@ -82,6 +87,12 @@ class Game{
 
     update(){
         var delta_time = this.game.time.elapsed/1000;
+        if(this.game.input.activePointer){
+            console.log("down");
+        }
+        if(this.game.input.activePointer.justReleased){
+            console.log("up");
+        }
         this.entity_list.forEach(e => {
             e.update(delta_time);
         });

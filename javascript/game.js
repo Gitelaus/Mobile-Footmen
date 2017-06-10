@@ -52,6 +52,7 @@ var Game = (function () {
         this.layer_2 = this.game.add.group();
         this.layer_3 = this.game.add.group();
         this.layer_4 = this.game.add.group();
+        this.selectionbox = this.game.add.graphics(0, 0, this.layer_4);
     };
     Game.prototype.create = function () {
         console.log("create");
@@ -88,6 +89,12 @@ var Game = (function () {
     };
     Game.prototype.update = function () {
         var delta_time = this.game.time.elapsed / 1000;
+        if (this.game.input.activePointer) {
+            console.log("down");
+        }
+        if (this.game.input.activePointer.justReleased) {
+            console.log("up");
+        }
         this.entity_list.forEach(function (e) {
             e.update(delta_time);
         });
@@ -108,6 +115,39 @@ var Base = (function (_super) {
         return _this;
     }
     return Base;
+}(Entity));
+// This class is for map building.
+var Map = (function () {
+    function Map() {
+        this.tile_map = [];
+        this.entities = [];
+    }
+    /*
+    *   If u use this for entities and not tile entities i will rekt you
+    */
+    Map.prototype.addTile = function (tile) {
+        var v = this.tile_map.filter(function (x) { x.sprite.position == tile.sprite.position; });
+        if (v.length > 1) {
+            console.log("If this errors then we're fucked.");
+        }
+        if (v) {
+            this.tile_map.splice(this.tile_map.indexOf(v[0]), 1);
+        }
+        this.tile_map.push(tile);
+    };
+    Map.prototype.removeTile = function (x, y) {
+    };
+    return Map;
+}());
+var SelectionBox = (function (_super) {
+    __extends(SelectionBox, _super);
+    function SelectionBox(x, y) {
+        var _this = this;
+        var sprite = game_object.game.add.graphics(x, y);
+        _this = _super.call(this, undefined) || this;
+        return _this;
+    }
+    return SelectionBox;
 }(Entity));
 var Grass = (function (_super) {
     __extends(Grass, _super);
