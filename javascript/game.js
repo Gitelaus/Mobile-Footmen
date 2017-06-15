@@ -56,16 +56,11 @@ var Game = (function () {
     };
     Game.prototype.create = function () {
         console.log("create");
-        this.entity_list = new Array();
-        for (var x = 0; x < 30; x++) {
-            for (var y = 0; y < 30; y++) {
-                new Grass(x * 32, y * 32);
-            }
-        }
+        this.map = new Map();
         var unit = new UnitDefault(0, 0);
-        this.entity_list.push(unit);
+        this.map.entities.push(unit);
         var base = new Base(0, 0);
-        this.entity_list.push(base);
+        this.map.entities.push(base);
     };
     Game.prototype.createSprite = function (x, y, resource_name, layer) {
         var sprite = game_object.game.add.sprite(x, y, resource_name);
@@ -89,13 +84,21 @@ var Game = (function () {
     };
     Game.prototype.update = function () {
         var delta_time = this.game.time.elapsed / 1000;
-        if (this.game.input.activePointer) {
-            console.log("down");
+        if (this.game.input.activePointer.isDown &&
+            this.game.input.activePointer.isMouse &&
+            this.game.input.activePointer.button == Phaser.Mouse.LEFT_BUTTON) {
+            console.log("Down");
         }
-        if (this.game.input.activePointer.justReleased) {
-            console.log("up");
+        if (this.game.input.activePointer.isUp &&
+            this.game.input.activePointer.isMouse &&
+            this.game.input.activePointer.button == Phaser.Mouse.LEFT_BUTTON) {
+            console.log("Up");
         }
-        this.entity_list.forEach(function (e) {
+        // this.game.input.activePointer.leftButton.onDown = new Phaser.Sign
+        // if(this.game.input.activePointer.leftButton.onUp){
+        //     console.log("up");
+        // }
+        this.map.entities.forEach(function (e) {
             e.update(delta_time);
         });
     };
@@ -119,8 +122,13 @@ var Base = (function (_super) {
 // This class is for map building.
 var Map = (function () {
     function Map() {
-        this.tile_map = [];
-        this.entities = [];
+        this.tile_map = new Array();
+        this.entities = new Array();
+        for (var x = 0; x < 30; x++) {
+            for (var y = 0; y < 10; y++) {
+                this.addTile(new Grass(x * 32, y * 32));
+            }
+        }
     }
     /*
     *   If u use this for entities and not tile entities i will rekt you
@@ -128,7 +136,7 @@ var Map = (function () {
     Map.prototype.addTile = function (tile) {
         var v = this.tile_map.filter(function (x) { x.sprite.position == tile.sprite.position; });
         if (v.length > 1) {
-            console.log("If this errors then we're fucked.");
+            console.log("If this is true then we're fucked.");
         }
         if (v) {
             this.tile_map.splice(this.tile_map.indexOf(v[0]), 1);
@@ -136,6 +144,13 @@ var Map = (function () {
         this.tile_map.push(tile);
     };
     Map.prototype.removeTile = function (x, y) {
+        var v = this.tile_map.filter(function (e) { e.sprite.position == new Phaser.Point(x, y); });
+        if (v.length > 1) {
+            console.log("If this is true then we're fucked.");
+        }
+        if (v) {
+            this.tile_map.splice(this.tile_map.indexOf(v[0]), 1);
+        }
     };
     return Map;
 }());

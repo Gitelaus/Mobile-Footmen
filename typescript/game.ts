@@ -32,7 +32,7 @@ class Game{
     layer_3 : Phaser.Group;
     layer_4 : Phaser.Group;
 
-    entity_list : Entity[];
+    map : Map;
 
     selectionbox : Phaser.Graphics;
 
@@ -52,16 +52,11 @@ class Game{
 
     create(){
         console.log("create");
-        this.entity_list = new Array();
-        for(var x = 0; x < 30; x++){
-            for(var y = 0; y < 30; y++){
-                new Grass(x * 32, y * 32);
-            }
-        }
+        this.map = new Map();
         var unit : UnitDefault = new UnitDefault(0, 0);
-        this.entity_list.push(unit);
+        this.map.entities.push(unit);
         var base : Base = new Base(0, 0);
-        this.entity_list.push(base);
+        this.map.entities.push(base);
     }
 
     createSprite(x : number, y : number, resource_name : String, layer : number){
@@ -87,16 +82,25 @@ class Game{
 
     update(){
         var delta_time = this.game.time.elapsed/1000;
-        if(this.game.input.activePointer){
-            console.log("down");
+        if(this.game.input.activePointer.isDown &&
+            this.game.input.activePointer.isMouse &&
+            this.game.input.activePointer.button == Phaser.Mouse.LEFT_BUTTON){
+                console.log("Down");
         }
-        if(this.game.input.activePointer.justReleased){
-            console.log("up");
+        if(this.game.input.activePointer.isUp &&
+            this.game.input.activePointer.isMouse &&
+            this.game.input.activePointer.button == Phaser.Mouse.LEFT_BUTTON){
+            console.log("Up");
         }
-        this.entity_list.forEach(e => {
+        // this.game.input.activePointer.leftButton.onDown = new Phaser.Sign
+        // if(this.game.input.activePointer.leftButton.onUp){
+        //     console.log("up");
+        // }
+        this.map.entities.forEach(e => {
             e.update(delta_time);
         });
     }
+
 }
 
 let game_object : Game = new Game();
