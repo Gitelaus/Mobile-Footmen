@@ -80,17 +80,32 @@ class Game{
         return sprite;
     }
 
+    debouce : boolean;
+    selection_box : Phaser.Graphics;
+
     update(){
         var delta_time = this.game.time.elapsed/1000;
-        if(this.game.input.activePointer.isDown &&
-            this.game.input.activePointer.isMouse &&
-            this.game.input.activePointer.button == Phaser.Mouse.LEFT_BUTTON){
-                console.log("Down");
+        var mouseDown = this.game.input.activePointer.isDown;
+        if(mouseDown && !this.debouce){
+            if(this.selection_box){
+                this.layer_4.removeChild(this.selection_box);
+            }
+            var pos = this.game.input.activePointer.position;
+            this.selection_box = this.game.add.graphics(pos.x, pos.y, this.layer_4);
+            this.debouce = true;
         }
-        if(this.game.input.activePointer.isUp &&
-            this.game.input.activePointer.isMouse &&
-            this.game.input.activePointer.button == Phaser.Mouse.LEFT_BUTTON){
-            console.log("Up");
+        if(!mouseDown && this.debouce){
+            if(this.selection_box){
+                this.layer_4.removeChild(this.selection_box);
+            }
+            this.selection_box = undefined;
+            this.debouce = false;
+        }
+        if(this.selection_box){
+            var pos = this.game.input.activePointer.position;
+            this.selection_box.clear();
+            this.selection_box.beginFill(0xFFFFFF, 0.1);
+            this.selection_box.drawRect(0,0, pos.x - this.selection_box.x, pos.y - this.selection_box.y);
         }
         // this.game.input.activePointer.leftButton.onDown = new Phaser.Sign
         // if(this.game.input.activePointer.leftButton.onUp){
