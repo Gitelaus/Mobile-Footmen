@@ -37,6 +37,7 @@ class Game{
     selectionbox : Phaser.Graphics;
 
     preload(){
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
         console.log("preload");
         image_dictionary.forEach(image => {
             this.game.load.image(image['name'], image['url']);
@@ -51,10 +52,7 @@ class Game{
     }
 
     create(){
-        console.log("create");
         this.map = new Map();
-        var unit : UnitDefault = new UnitDefault(0, 0);
-        this.map.entities.push(unit);
         var base : Base = new Base(0, 0);
         this.map.entities.push(base);
     }
@@ -104,13 +102,9 @@ class Game{
         if(this.selection_box){
             var pos = this.game.input.activePointer.position;
             this.selection_box.clear();
-            this.selection_box.beginFill(0xFFFFFF, 0.1);
+            this.selection_box.beginFill(0xFFFFFF, 0.2);
             this.selection_box.drawRect(0,0, pos.x - this.selection_box.x, pos.y - this.selection_box.y);
         }
-        // this.game.input.activePointer.leftButton.onDown = new Phaser.Sign
-        // if(this.game.input.activePointer.leftButton.onUp){
-        //     console.log("up");
-        // }
         this.map.entities.forEach(e => {
             e.update(delta_time);
         });

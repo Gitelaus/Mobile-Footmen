@@ -11,6 +11,8 @@ var __extends = (this && this.__extends) || (function () {
 var Entity = (function () {
     function Entity(sprite) {
         this.sprite = sprite;
+        game_object.game.physics.enable(this.sprite);
+        console.log(this.sprite);
     }
     Entity.prototype.update = function (deltaTime) {
     };
@@ -44,6 +46,7 @@ var Game = (function () {
     }
     Game.prototype.preload = function () {
         var _this = this;
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
         console.log("preload");
         image_dictionary.forEach(function (image) {
             _this.game.load.image(image['name'], image['url']);
@@ -55,10 +58,7 @@ var Game = (function () {
         this.selectionbox = this.game.add.graphics(0, 0, this.layer_4);
     };
     Game.prototype.create = function () {
-        console.log("create");
         this.map = new Map();
-        var unit = new UnitDefault(0, 0);
-        this.map.entities.push(unit);
         var base = new Base(0, 0);
         this.map.entities.push(base);
     };
@@ -103,13 +103,9 @@ var Game = (function () {
         if (this.selection_box) {
             var pos = this.game.input.activePointer.position;
             this.selection_box.clear();
-            this.selection_box.beginFill(0xFFFFFF, 0.1);
+            this.selection_box.beginFill(0xFFFFFF, 0.2);
             this.selection_box.drawRect(0, 0, pos.x - this.selection_box.x, pos.y - this.selection_box.y);
         }
-        // this.game.input.activePointer.leftButton.onDown = new Phaser.Sign
-        // if(this.game.input.activePointer.leftButton.onUp){
-        //     console.log("up");
-        // }
         this.map.entities.forEach(function (e) {
             e.update(delta_time);
         });
@@ -124,11 +120,24 @@ var Base = (function (_super) {
         var sprite = game_object.createSprite(x, y, 'Base', 2);
         sprite.scale.set(0.75, 0.75);
         _this = _super.call(this, sprite) || this;
-        _this.units = [];
+        _this.units = new Array();
         _this.unit_max = 4;
-        _this.unit_spawn_speed = 1;
+        _this.unit_spawn_speed = 3;
+        _this.last_spawn_time = new Date();
         return _this;
     }
+    Base.prototype.update = function (deltaTime) {
+        var current_time = new Date();
+        if (this.units.length >= this.unit_max) {
+            return;
+        }
+        if (current_time.getTime() - this.last_spawn_time.getTime() > (this.unit_spawn_speed * 1000)) {
+            var unit = new UnitDefault(this.sprite.centerX + this.sprite.width / 4, this.sprite.centerY + this.sprite.height / 4);
+            game_object.map.entities.push(unit);
+            this.units.push(unit);
+            this.last_spawn_time = new Date();
+        }
+    };
     return Base;
 }(Entity));
 // This class is for map building.
